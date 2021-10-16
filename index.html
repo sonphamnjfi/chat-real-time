@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chat real time</title>
+</head>
+<body>
+    <h1> chat truc tiep theo thoi gian thuc</h1>
+    <!--tao ra khung nhap tin nhan-->
+    <ul id="messages"></ul>
+
+    <form id="chat-form">
+        <input type="text" id="chat-mes">  
+        <button id="send-chat">send</button>
+    </form>
+</body>
+
+<!--script-->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+// tao ten nguoi dung
+    const name = prompt(" name : ")
+// doc du lieu tu khung message
+    const chatForm = document.querySelector('#chat-form');
+    const chatMes = document.querySelector('#chat-mes')
+
+// nghe su kien nhan nut submit 
+    chatForm.addEventListener('submit', (e) => {
+        // tranh reload , 
+        e.preventDefault();
+
+        const message = chatMes.value
+        // gui du lieu cho server
+        socket.emit('on-chat', {
+            name, 
+            message
+        })
+        //set khung chat = ''
+        chatMes.value =''
+    })
+    //doc du lieu tu server gui cho va hien thi o 'li'
+    const messages = document.querySelector('#messages')
+    socket.on('user-chat', (message)=>{
+        const chatItem = document.createElement('li')
+        // hien thi du lieu ten nguoi dung : mes
+        chatItem.innerHTML = `${message.name} : ${message.message} `;
+
+        messages.appendChild(chatItem)
+    })
+</script>
+</html>
